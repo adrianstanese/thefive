@@ -466,13 +466,20 @@ export default function TheFiveApp(){
   const[showPropose,setShowPropose]=useState(false);
   const[proposeName,setProposeName]=useState("");
   const[proposeIcon,setProposeIcon]=useState("");
+  const[showAuth,setShowAuth]=useState(false);
+  const[authMode,setAuthMode]=useState("signin");
+  const[authEmail,setAuthEmail]=useState("");
+  const[authPass,setAuthPass]=useState("");
+  const[authName,setAuthName]=useState("");
   /* #3 Page transition */
   const[pageAnim,setPageAnim]=useState("in");
   const th=TH[themeId];
 
   useEffect(()=>{setTimeout(()=>setLoading(false),1000);},[]);
   const showT=m=>{setToast(m);setTimeout(()=>setToast(null),2500);};
-  const authGate=()=>{setLoggedIn(true);showT("Welcome to TheFive, Member #007! ✦");};
+  const authGate=()=>setShowAuth(true);
+  const handleSignIn=()=>{if(!authEmail||!authPass)return;setLoggedIn(true);setShowAuth(false);setAuthEmail("");setAuthPass("");setAuthName("");setConfetti(true);setTimeout(()=>setConfetti(false),800);showT("Welcome back, Adrian! ✦");};
+  const handleSignUp=()=>{if(!authEmail||!authPass||!authName)return;setLoggedIn(true);setShowAuth(false);setAuthEmail("");setAuthPass("");setAuthName("");setConfetti(true);setTimeout(()=>setConfetti(false),800);showT(`Welcome to TheFive, ${authName}! Member #007 ✦`);};
   const handleVote=(lid,k,v)=>setVotes(p=>({...p,[lid]:{...(p[lid]||{}),[k]:v}}));
   const handleCreate=(cat,title,items,isPrivate)=>{
     const nl={id:"nl"+Date.now(),userId:"u1",cat,title,up:0,dn:0,date:new Date().toISOString(),spotlight:false,
@@ -880,5 +887,53 @@ export default function TheFiveApp(){
     {shareCard&&<ShareCard list={shareCard} th={th} onClose={()=>setShareCard(null)}/>}
     {showWrapped&&<WrappedView th={th} onBack={()=>setShowWrapped(false)}/>}
     {showCreate&&<CreateModal th={th} initCat={createCat} onClose={()=>{setShowCreate(false);setCreateCat("");}} onSave={handleCreate}/>}
+
+    {/* AUTH MODAL */}
+    {showAuth&&<div style={{position:"fixed",inset:0,zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center",background:th.modalOv,backdropFilter:"blur(16px)",padding:16}} onClick={()=>setShowAuth(false)}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:360,background:th.gF,borderRadius:Z.r,padding:24,border:`1px solid ${th.bd}`,backdropFilter:Z.float.blur,boxShadow:"0 24px 80px rgba(0,0,0,0.15)"}}>
+        <div style={{textAlign:"center",marginBottom:20}}>
+          <Logo size={36} color={th.ac}/>
+          <div style={{fontSize:20,fontWeight:900,color:th.tx,marginTop:8}}>TheFive</div>
+          <div style={{fontSize:12,color:th.t3,marginTop:2}}>Your definitive five.</div>
+        </div>
+
+        {/* Tabs */}
+        <div style={{display:"flex",gap:4,marginBottom:18,background:th.bd2,borderRadius:Z.rS,padding:3}}>
+          {["signin","signup"].map(m=> <div key={m} onClick={()=>setAuthMode(m)} style={{flex:1,textAlign:"center",padding:"8px 0",borderRadius:Z.rXs,fontSize:13,fontWeight:700,cursor:"pointer",color:authMode===m?th.tx:th.t3,background:authMode===m?th.gC:"transparent",boxShadow:authMode===m?th.glow:"none",transition:"all 0.2s"}}>{m==="signin"?"Sign In":"Sign Up"}</div>)}
+        </div>
+
+        {/* Name field (sign up only) */}
+        {authMode==="signup"&&<input placeholder="Full name" value={authName} onChange={e=>setAuthName(e.target.value)} style={{width:"100%",padding:"12px 14px",borderRadius:Z.rXs,border:`1px solid ${th.inBd}`,background:th.inBg,color:th.tx,fontSize:14,fontFamily:F,outline:"none",boxSizing:"border-box",marginBottom:10}}/>}
+
+        {/* Email */}
+        <input placeholder="Email address" type="email" value={authEmail} onChange={e=>setAuthEmail(e.target.value)} style={{width:"100%",padding:"12px 14px",borderRadius:Z.rXs,border:`1px solid ${th.inBd}`,background:th.inBg,color:th.tx,fontSize:14,fontFamily:F,outline:"none",boxSizing:"border-box",marginBottom:10}}/>
+
+        {/* Password */}
+        <input placeholder="Password" type="password" value={authPass} onChange={e=>setAuthPass(e.target.value)} style={{width:"100%",padding:"12px 14px",borderRadius:Z.rXs,border:`1px solid ${th.inBd}`,background:th.inBg,color:th.tx,fontSize:14,fontFamily:F,outline:"none",boxSizing:"border-box",marginBottom:6}}/>
+
+        {authMode==="signin"&&<div style={{textAlign:"right",marginBottom:14}}><span style={{fontSize:11,color:th.ac,cursor:"pointer",fontWeight:600}}>Forgot password?</span></div>}
+        {authMode==="signup"&&<div style={{height:14}}/>}
+
+        {/* Submit */}
+        <GBtn th={th} primary onClick={authMode==="signin"?handleSignIn:handleSignUp} style={{width:"100%",padding:"12px 0",fontSize:15,fontWeight:800,justifyContent:"center"}}>
+          {authMode==="signin"?"Sign In":"Create Account"}
+        </GBtn>
+
+        {/* Divider */}
+        <div style={{display:"flex",alignItems:"center",gap:10,margin:"16px 0"}}>
+          <div style={{flex:1,height:1,background:th.bd}}/><span style={{fontSize:11,color:th.t3,fontWeight:600}}>or continue with</span><div style={{flex:1,height:1,background:th.bd}}/>
+        </div>
+
+        {/* Social buttons */}
+        <div style={{display:"flex",gap:8}}>
+          {["Google","Apple","GitHub"].map(p=> <GBtn key={p} th={th} small style={{flex:1,justifyContent:"center",fontSize:12}} onClick={()=>{setLoggedIn(true);setShowAuth(false);setConfetti(true);setTimeout(()=>setConfetti(false),800);showT(`Signed in with ${p}! ✦`);}}>{p}</GBtn>)}
+        </div>
+
+        <div style={{textAlign:"center",marginTop:14,fontSize:11,color:th.t3}}>
+          {authMode==="signin"?"Don't have an account? ":"Already have an account? "}
+          <span onClick={()=>setAuthMode(authMode==="signin"?"signup":"signin")} style={{color:th.ac,fontWeight:700,cursor:"pointer"}}>{authMode==="signin"?"Sign Up":"Sign In"}</span>
+        </div>
+      </div>
+    </div>}
   </div>;
 }
