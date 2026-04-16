@@ -12,7 +12,7 @@ const F="'DM Sans',system-ui,-apple-system,sans-serif";
 const Z={bg:{blur:"saturate(200%) blur(28px)"},content:{blur:"saturate(180%) blur(18px)"},float:{blur:"saturate(160%) blur(12px)"},r:22,rS:14,rXs:10};
 
 /* ─── Logo ────────────────────────────────────────────────── */
-const Logo=({size=24,color})=>(
+const Logo=({size=24,color}:{size?:number,color:string})=>(
   <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
     <rect x="4" y="28" width="6" height="16" rx="1" fill={color}/>
     <rect x="13" y="20" width="6" height="24" rx="1" fill={color}/>
