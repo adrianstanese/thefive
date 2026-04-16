@@ -12,7 +12,7 @@ const F="'DM Sans',system-ui,-apple-system,sans-serif";
 const Z={bg:{blur:"saturate(200%) blur(28px)"},content:{blur:"saturate(180%) blur(18px)"},float:{blur:"saturate(160%) blur(12px)"},r:22,rS:14,rXs:10};
 
 /* ─── Logo ────────────────────────────────────────────────── */
-const Logo=({size=24,color}:{size?:number,color:string})=>(
+const Logo=({size=24,color})=>(
   <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
     <rect x="4" y="28" width="6" height="16" rx="1" fill={color}/>
     <rect x="13" y="20" width="6" height="24" rx="1" fill={color}/>
@@ -560,6 +560,7 @@ export default function TheFiveApp(){
         <div style={{display:"flex",gap:5,alignItems:"center"}}>
           {Object.values(TH).map(t=> <div key={t.id} onClick={()=>setThemeId(t.id)} style={{width:26,height:26,borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,cursor:"pointer",border:`2px solid ${themeId===t.id?th.ac:th.bd}`,background:themeId===t.id?th.acS:"transparent",boxShadow:themeId===t.id?th.glowA:"none",transition:"all 0.2s"}}>{t.ic}</div>)}
           {!loggedIn&&<GBtn th={th} primary small onClick={authGate}>Join</GBtn>}
+          {loggedIn&&<GBtn th={th} small onClick={()=>{setLoggedIn(false);goHome();showT("Signed out ✦");}}>Sign Out</GBtn>}
           {loggedIn&&<div onClick={()=>navigate("profile",{user:USERS[0]})} style={{width:28,height:28,borderRadius:14,overflow:"hidden",cursor:"pointer",border:`2px solid ${th.ac}`,boxShadow:th.glowA}}><img src={USERS[0].av} style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>}
         </div>
       </div>
